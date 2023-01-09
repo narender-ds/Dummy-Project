@@ -1,13 +1,3 @@
-/**
- * This is an example of how to create a template that makes use of streams data.
- * The stream data originates from Yext's Knowledge Graph. When a template in
- * concert with a stream is built by the Yext Sites system, a static html page
- * is generated for every corresponding (based on the filter) stream document.
- *
- * Another way to think about it is that a page will be generated using this
- * template for every eligible entity in your Knowledge Graph.
- */
-
 import {
   GetHeadConfig,
   GetPath,
@@ -19,6 +9,7 @@ import {
   TemplateRenderProps,
 } from "@yext/pages";
 import * as React from "react";
+import Header from "../components/header";
 import Banner from "../components/banner";
 import Details from "../components/details";
 import Hours from "../components/hours";
@@ -28,12 +19,13 @@ import StaticMap from "../components/static-map";
 import Favicon from "../public/yext-favicon.ico";
 import "../index.css";
 
+
 /**
  * Required when Knowledge Graph data is used for a template.
  */
 export const config: TemplateConfig = {
   stream: {
-    $id: "my-stream-id-1",
+    $id: "ce_shirts",
     // Specifies the exact data that each generated document will contain. This data is passed in
     // directly as props to the default exported function.
     fields: [
@@ -41,17 +33,14 @@ export const config: TemplateConfig = {
       "uid",
       "meta",
       "name",
-      "address",
-      "mainPhone",
+      "photoGallery",
       "description",
-      "hours",
-      "slug",
-      "geocodedCoordinate",
-      "services",
+      "price",
+      "size",
     ],
     // Defines the scope of entities that qualify for this stream.
     filter: {
-      entityTypes: ["location"],
+      entityTypes: ["ce_shirts"],
     },
     // The entity language profiles that documents will be generated for.
     localization: {
@@ -68,11 +57,7 @@ export const config: TemplateConfig = {
  * take on the form: featureName/entityId
  */
 export const getPath: GetPath<TemplateProps> = ({ document }) => {
-  return document.slug
-    ? document.slug
-    : `${document.locale}/${document.address.region}/${document.address.city}/${
-        document.address.line1
-      }-${document.id.toString()}`;
+  return document.slug ? document.slug : `${document.id.toString()}`;
 };
 
 /**
@@ -111,11 +96,11 @@ export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
       {
         type: "link",
         attributes: {
-          rel: 'icon',
-          type: 'image/x-icon',
-          href: Favicon
+          rel: "icon",
+          type: "image/x-icon",
+          href: Favicon,
         },
-      }
+      },
     ],
   };
 };
@@ -134,46 +119,36 @@ const Location: Template<TemplateRenderProps> = ({
   path,
   document,
 }) => {
-  const {
-    _site,
-    name,
-    address,
-    openTime,
-    hours,
-    mainPhone,
-    geocodedCoordinate,
-    services,
-    description,
-  } = document;
-
+  const { _site, name, photoGallery, description, price, size } = document;
+  const Photo = photoGallery.map((item: any) => {
+    return <img src={item.image.url} />;
+  });
   return (
     <>
-      <PageLayout _site={_site}>
-        <Banner name={name} address={address} />
+      <Header />
+         <div style={{ backgroundColor: "#EEfAE6" }}>
         <div className="centered-container">
           <div className="section">
             <div className="grid grid-cols-2 gap-x-10 gap-y-10">
-              <div className="bg-gray-100 p-2">
-                <Details address={address} phone={mainPhone}></Details>
-                {services && <List list={services}></List>}
-              </div>
-              <div className="bg-gray-100 p-2">
-                {hours && <Hours title={"Restaurant Hours"} hours={hours} />}
-              </div>
-              {geocodedCoordinate && (
-                <StaticMap
-                  latitude={geocodedCoordinate.latitude}
-                  longitude={geocodedCoordinate.longitude}
-                ></StaticMap>
-              )}
+              <div
+                className="bg-gray-100 p-2"
+                style={{
+                  color: "Black",
+                  fontWeight: "bold",
+                  fontFamily: "cursive",
+                }}
+              >{`Product Name:${name}`}</div>
+              <br></br>
+              <div className="bg-gray-100 p-2">{`Price:${price.value}`}</div>
               <div className="bg-gray-100 p-2">
                 <div className="text-xl font-semibold">{`About ${name}`}</div>
-                <p className="pt-4">{description}</p>
+                <p className="pt-4">{`Description:${description}`}</p>
               </div>
+              <div className="bg-gray-100">{Photo}</div>
             </div>
           </div>
         </div>
-      </PageLayout>
+      </div>
     </>
   );
 };

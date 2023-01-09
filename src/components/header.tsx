@@ -27,7 +27,7 @@ const Header = () => {
   ));
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50" style={{ backgroundColor: "#EE6" }}>
       <div className="centered-container">
         <nav className="py-6 flex items-center justify-between">
           <div className="flex gap-x-4 items-center">
